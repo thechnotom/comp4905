@@ -7,11 +7,18 @@ class AppServer {
     
     constructor () {
         this.counter = 0;
+        this.logFilename = "count_log.txt"
+        fs.writeFile(this.logFilename, "", function() {
+            console.log("log file created");
+        })
     }
 
     count (socket) {
         console.log("server received count button push");
         this.counter += 1;
+        fs.appendFile(this.logFilename, (new Date()).toString() + " -> counter=" + this.counter + "\n", function () {
+            console.log("writing counter to log");
+        });
         socket.emit('count', {"counter": this.counter});
     }
 
