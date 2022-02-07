@@ -26,8 +26,8 @@ class App {
 
     init () {
         //let socket = io.connect('http://localhost:3000');
-        //let socket = io.connect('0.0.0.0:3000');
-        let socket = io.connect('192.168.0.48:3000');
+        let socket = io.connect('0.0.0.0:3000');
+        //let socket = io.connect('192.168.0.48:3000');
         this.socket = socket;
         this.registerClientActions();
         this.registerServerActions();
