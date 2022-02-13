@@ -17,8 +17,9 @@
     "url": "https://github.com/thechnotom/comp4905/issues"
   },
   "homepage": "https://github.com/thechnotom/comp4905#readme",
-  "type" : "module",
+  "type": "module",
   "dependencies": {
+    "express": "^4.17.2",
     "socket.io": "^4.4.1"
   },
   "engines": {

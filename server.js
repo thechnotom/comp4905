@@ -1,4 +1,5 @@
 import { createServer } from 'http';
+import express from 'express';
 import fs, { readFile } from 'fs';
 import url, {parse} from 'url';
 import { Server } from 'socket.io';
@@ -6,6 +7,7 @@ import { Server } from 'socket.io';
 class AppServer {
     
     constructor () {
+        this.app = express();
         this.counter = 0;
         this.logFilename = "count_log.txt"
         this.PORT = process.env.PORT || 3000;
@@ -37,28 +39,23 @@ class AppServer {
     }
 
     init () {
-        let httpServer = createServer(function(req, res) {
-            let path = parse(req.url).pathname;
-            console.log("obtained path: " + path);
-            let contentType = 'text/html';
-            if (path === '/') {
-                path = './index.html';
-            } else if (path.indexOf('.css')) {
-                contentType = 'text/css';
-            }
-            let filePath = (new URL(import.meta.url)).pathname.replaceAll("%20", " ");
-            readFile(filePath.slice(1, filePath.lastIndexOf("/") + 1) + path, function (error, data) {
-                res.writeHead(200, { 'Content-Type': contentType });
-                res.end(data, 'utf-8');
-            });
+        let caller = this;
+        let filePath = (new URL(import.meta.url)).pathname.replaceAll("%20", " ");
+        filePath = filePath.slice(1, filePath.lastIndexOf("/") + 1)
+        console.log("filepath: " + filePath)
+
+        this.app.use(express.static(filePath + "public"));
+
+        this.app.get('/', function (req, res) {
+            res.sendFile(filePath + 'views/index.html');
         });
 
-        let io = new Server(httpServer);
-        this.registerSocketIO(io);
-        //httpServer.listen(3000);
-        httpServer.listen(this.PORT);
+        let server = createServer(this.app).listen(this.PORT, function () {
+            console.log("Listening on port " + caller.PORT);
+        });
 
-        console.log("Server on port: " + this.PORT);
+        let io = new Server(server);
+        this.registerSocketIO(io);
     }
 }
 
