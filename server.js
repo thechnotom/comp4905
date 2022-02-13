@@ -1,8 +1,9 @@
 import { createServer } from 'http';
 import express from 'express';
 import fs, { readFile } from 'fs';
-import url, {parse} from 'url';
+import url, {parse, fileURLToPath} from 'url';
 import { Server } from 'socket.io';
+import path from 'path'
 
 class AppServer {
     
@@ -40,14 +41,13 @@ class AppServer {
 
     init () {
         let caller = this;
-        let filePath = (new URL(import.meta.url)).pathname.replaceAll("%20", " ");
-        filePath = filePath.slice(1, filePath.lastIndexOf("/") + 1)
-        console.log("filepath: " + filePath)
+        let __dirname = path.dirname(fileURLToPath(import.meta.url));
+        console.log("filepath: " + __dirname)
 
-        this.app.use(express.static(filePath + "public"));
+        this.app.use(express.static(__dirname + "/public"));
 
         this.app.get('/', function (req, res) {
-            res.sendFile(filePath + 'views/index.html');
+            res.sendFile(__dirname + '/views/index.html');
         });
 
         let server = createServer(this.app).listen(this.PORT, function () {
