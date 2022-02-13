@@ -8,6 +8,7 @@ class AppServer {
     constructor () {
         this.counter = 0;
         this.logFilename = "count_log.txt"
+        this.PORT = process.env.PORT || 3000;
         fs.writeFile(this.logFilename, "", function() {
             console.log("log file created");
         })
@@ -27,6 +28,7 @@ class AppServer {
 
         io.sockets.on('connection', function (socket) {
             console.log('User connected');
+            socket.emit('information', {"port" : caller.PORT})
 
             socket.on('count', function () {
                 caller.count(socket);
@@ -54,7 +56,9 @@ class AppServer {
         let io = new Server(httpServer);
         this.registerSocketIO(io);
         //httpServer.listen(3000);
-        httpServer.listen(process.env.PORT || 3000);
+        httpServer.listen(this.PORT);
+
+        console.log("Server on port: " + this.PORT);
     }
 }
 
