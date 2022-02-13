@@ -39,10 +39,10 @@ class AppServer {
     init () {
         let httpServer = createServer(function(req, res) {
             let path = parse(req.url).pathname;
-            console.log(path);
+            console.log("obtained path: " + path);
             let contentType = 'text/html';
             if (path === '/') {
-                path = '/index.html';
+                path = './index.html';
             } else if (path.indexOf('.css')) {
                 contentType = 'text/css';
             }
