@@ -11,9 +11,33 @@ class App {
 
     registerClientActions () {
         let caller = this;
-        $('#countButton').click(function () {
+
+        $('#count-button').click(function () {
             caller.countButton();
             console.log("count button pressed on client");
+        });
+
+        $('#play-audio').click(function () {
+            document.getElementById("test-audio").play();
+        });
+
+        $('#click-area').click(function () {
+            let click_element = document.getElementById("click-area");
+            if (click_element.getAttribute("class") === "unselected") {
+                click_element.setAttribute("class", "selected");
+                $("#recording-status").text("Recording Active");
+            }
+            else {
+                click_element.setAttribute("class", "unselected");
+                $("#recording-status").text("Not Recording");
+            }
+        });
+
+        $(document).on("keypress", function (e) {
+            console.log("key pressed: " + e.which)
+            if (e.which === 32) {
+                console.log("space bar pressed");
+            }
         });
     }
 

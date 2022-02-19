@@ -4,15 +4,34 @@
     <head>
         <meta charset="utf-8" />
         <title>COMP 4905 Project</title>
-        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="public/js/jquery.min.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="js/app.client.js"></script>
+        <script type="text/javascript" src="public/js/app.client.js"></script>
+        <audio id="test-audio" src="audio/test.mp3"></audio>
+        <link rel="stylesheet" href="public/styles/style.css">
     </head>
     <body>
-        This is a test:
-        <br>
-        <button id="countButton">Count</button>
-        <br>
-        Count: <div id="countLabel"></div>
+        <div class="grid-upper">
+            <div class="grid-upper-child">
+                This is a test:
+                <br>
+                <button id="count-button">Count</button>
+                <br>
+                Count: <span id="count-label"></span>
+                <br>
+                <button id="play-audio">Play</button>
+                <div id="click-area" class="unselected">
+                    Click here to start/stop rhythm entry
+                    <br>
+                    <span id="recording-status">Not Recording</span>
+                </div>
+            </div>
+            <div class="grid-upper-child">
+                Here is more text!
+            </div>
+        </div>
+        <div class="bottom-block">
+            Instructions go here.
+        </div>
     </body>
 </html>

@@ -44,7 +44,7 @@ class AppServer {
         let __dirname = path.dirname(fileURLToPath(import.meta.url));
         console.log("filepath: " + __dirname)
 
-        this.app.use(express.static(__dirname + "/public"));
+        this.app.use(express.static(__dirname));
 
         this.app.get('/', function (req, res) {
             res.sendFile(__dirname + '/views/index.html');

@@ -1,0 +1,29 @@
+body {
+    background-color: powderblue;
+}
+
+.grid-upper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.grid-upper-child, .bottom-block {
+    border: 1px;
+    border-color: black;
+    border-radius: 5px;
+    border-style: solid;
+    padding: 10px;
+}
+
+.bottom-block {
+    margin-top: 10px;
+}
+
+.unselected {
+    background-color: rgb(175, 91, 91);
+}
+
+.selected {
+    background-color: rgb(95, 161, 95);
+}
