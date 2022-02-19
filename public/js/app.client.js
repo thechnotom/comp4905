@@ -48,7 +48,7 @@ class App {
 
         this.socket.on('count', function (data) {
             console.log("client received 'count' from server (new count: " + data.counter + " )");
-            $('#countLabel').text(data.counter);
+            $('#count-label').text(data.counter);
         });
     }
 
