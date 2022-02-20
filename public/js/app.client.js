@@ -1,7 +1,7 @@
 class App {
 
     constructor () {
-        //
+        this.recording = null;
     }
 
     countButton () {
@@ -26,10 +26,13 @@ class App {
             if (click_element.getAttribute("class") === "unselected") {
                 click_element.setAttribute("class", "selected");
                 $("#recording-status").text("Recording Active");
+                caller.recording = new Passcode([1, 1, 1, 1]);
             }
             else {
                 click_element.setAttribute("class", "unselected");
                 $("#recording-status").text("Not Recording");
+                let result = caller.recording.calcResult();
+                console.log("RESULT: " + result);
             }
         });
 
@@ -37,6 +40,7 @@ class App {
             console.log("key pressed: " + e.which)
             if (e.which === 32) {
                 console.log("space bar pressed");
+                caller.recording.addTime(Date.now());
             }
         });
     }
