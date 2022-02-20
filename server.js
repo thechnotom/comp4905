@@ -9,21 +9,37 @@ class AppServer {
     
     constructor () {
         this.app = express();
-        this.counter = 0;
-        this.logFilename = "count_log.txt"
+        this.logFilename = "attempt_log.txt"
         this.PORT = process.env.PORT || 3000;
         fs.writeFile(this.logFilename, "", function() {
             console.log("log file created");
         })
     }
 
-    count (socket) {
-        console.log("server received count button push");
-        this.counter += 1;
-        fs.appendFile(this.logFilename, (new Date()).toString() + " -> counter=" + this.counter + "\n", function () {
-            console.log("writing counter to log");
+    gatherAudioData () {
+        let result = {"audio" : []};
+        let audioFiles = fs.readdirSync("audio/mp3/");
+        let jsonFiles = fs.readdirSync("audio/json");
+        for (let i = 0; i < audioFiles.length; ++i) {
+            let targetJSON = audioFiles[i].substring(0, audioFiles[i].lastIndexOf(".")) + ".json";
+            // ensure corresponding JSON exists
+            if (jsonFiles.includes(targetJSON)) {
+                let intervals = JSON.parse(fs.readFileSync("audio/json/" + targetJSON))["intervals_ms"];
+                result["audio"].push({ "filename" : audioFiles[i], "intervals_ms" : intervals });
+            }
+            else {
+                console.log("Unable to find JSON corresponding to: " + audioFiles[i]);
+            }
+        }
+        return result;
+    }
+
+    handleAttemptResults (data) {
+        console.log("server received attempt data");
+        let logString = (new Date()).toString() + " -> result=" + data.result + "\n";
+        fs.appendFile(this.logFilename, logString, function () {
+            console.log("writing attempt data to log: " + logString);
         });
-        socket.emit('count', {"counter": this.counter});
     }
 
     registerSocketIO (io) {
@@ -31,10 +47,10 @@ class AppServer {
 
         io.sockets.on('connection', function (socket) {
             console.log('User connected');
-            socket.emit('information', {"port" : caller.PORT})
+            socket.emit("information", caller.gatherAudioData());
 
-            socket.on('count', function () {
-                caller.count(socket);
+            socket.on("attempt", function (data) {
+                caller.handleAttemptResults(data);
             });
         });
     }

@@ -8,10 +8,14 @@ class Passcode {
         this.attemptTimes = [];
         this.attemptIntervals = [];
         this.baseIntervals = baseIntervals;
+
+        this.finished = false;
     }
 
     addTime (time) {
-        this.attemptTimes.push(time);
+        if (!this.finished) {
+            this.attemptTimes.push(time);
+        }
     }
 
     reset () {
@@ -72,12 +76,17 @@ class Passcode {
 
     static withinTolerance (v1, v2, tolerance) {
         return (
-            (v1 * (1 - tolerance) <= v2 && v1 * (1 + tolerance >= v2)) ||
-            (v2 * (1 - tolerance) <= v1 && v2 * (1 + tolerance >= v1))
+            (v1 * (1 - tolerance) <= v2 && v1 * (1 + tolerance) >= v2) ||
+            (v2 * (1 - tolerance) <= v1 && v2 * (1 + tolerance) >= v1)
         );
     }
 
     isMatch (DEBUG=false) {
+
+        if (DEBUG) {
+            console.log("base intervals:    " + this.baseIntervals);
+            console.log("attempt intervals: " + this.attemptIntervals);
+        }
 
         if (this.baseIntervals.length === 0) {
             console.log("Base pattern not configured");
@@ -112,19 +121,9 @@ class Passcode {
     }
 
     calcResult () {
+        this.finished = true;
         this.convertToIntervals();
         return this.isMatch(true);
     }
 
 }
-
-/*
-let recorder = new Passcode();
-recorder.addTime(107);
-recorder.addTime(109);
-recorder.addTime(110);
-recorder.addTime(115);
-recorder.addTime(121);
-recorder.convertToIntervals();
-console.log(recorder.intervals);
-*/

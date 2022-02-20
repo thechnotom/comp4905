@@ -1,43 +1,56 @@
 class App {
 
     constructor () {
+        this.currentAudio = 0;
         this.recording = null;
     }
 
-    countButton () {
-        console.log("emiting 'count'");
-        this.socket.emit('count');
+    beginRecording () {
+        this.recording = new Passcode(this.audioData[this.currentAudio]["intervals_ms"]);
+    }
+
+    finishRecording () {
+        let result = this.recording.calcResult();
+        console.log("RESULT: " + result);
+        this.sendAttemptResults({ "result" : result });
+        return result;
+    }
+
+    sendAttemptResults (results) {
+        console.log("emiting 'attempt'");
+        this.socket.emit("attempt", results);
     }
 
     registerClientActions () {
         let caller = this;
 
-        $('#count-button').click(function () {
-            caller.countButton();
-            console.log("count button pressed on client");
+        $("#play-audio").click(function () {
+            document.getElementById("audio").setAttribute("src", "audio/mp3/" + caller.audioData[caller.currentAudio]["filename"]);
+            console.log("playing: " + caller.audioData[caller.currentAudio]["filename"]);
+            document.getElementById("audio").play();
         });
 
-        $('#play-audio').click(function () {
-            document.getElementById("test-audio").play();
+        $("#next-audio").click(function () {
+            caller.currentAudio = (caller.currentAudio + 1) % caller.audioData.length;
+            console.log("advancing to: " + caller.audioData[caller.currentAudio]["filename"]);
         });
 
-        $('#click-area').click(function () {
+        $("#click-area").click(function () {
             let click_element = document.getElementById("click-area");
             if (click_element.getAttribute("class") === "unselected") {
                 click_element.setAttribute("class", "selected");
                 $("#recording-status").text("Recording Active");
-                caller.recording = new Passcode([1, 1, 1, 1]);
+                caller.beginRecording();
             }
             else {
                 click_element.setAttribute("class", "unselected");
                 $("#recording-status").text("Not Recording");
-                let result = caller.recording.calcResult();
-                console.log("RESULT: " + result);
+                let result = caller.finishRecording();
+                $("#attempt-result").text(result ? "success" : "failure");
             }
         });
 
         $(document).on("keypress", function (e) {
-            console.log("key pressed: " + e.which)
             if (e.which === 32) {
                 console.log("space bar pressed");
                 caller.recording.addTime(Date.now());
@@ -46,13 +59,11 @@ class App {
     }
 
     registerServerActions () {
-        this.socket.on('information', function (data) {
-            console.log("client receive 'information' from server (port: " + data.port + ")");
-        });
+        let caller = this;
 
-        this.socket.on('count', function (data) {
-            console.log("client received 'count' from server (new count: " + data.counter + " )");
-            $('#count-label').text(data.counter);
+        this.socket.on('information', function (data) {
+            console.log("client receive 'information' from server");
+            caller.audioData = data["audio"];
         });
     }
 

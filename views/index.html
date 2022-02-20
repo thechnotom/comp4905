@@ -8,24 +8,23 @@
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="public/js/passcode.js"></script>
         <script type="text/javascript" src="public/js/app.client.js"></script>
-        <audio id="test-audio" src="audio/test.mp3"></audio>
+        <!--- <audio id="test-audio" src="audio/test.mp3"></audio> --->
+        <audio id="audio"></audio>
         <link rel="stylesheet" href="public/styles/style.css">
     </head>
     <body>
         <div class="grid-upper">
             <div class="grid-upper-child">
-                This is a test:
-                <br>
-                <button id="count-button">Count</button>
-                <br>
-                Count: <span id="count-label"></span>
+                Application under development
                 <br>
                 <button id="play-audio">Play</button>
+                <button id="next-audio">Next</button>
                 <div id="click-area" class="unselected">
                     Click here to start/stop rhythm entry
                     <br>
                     <span id="recording-status">Not Recording</span>
                 </div>
+                Result: <span id="attempt-result">N/A</span>
             </div>
             <div class="grid-upper-child">
                 Here is more text!
