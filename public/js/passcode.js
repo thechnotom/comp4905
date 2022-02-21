@@ -97,6 +97,10 @@ class Passcode {
             console.log("Base pattern not configured");
             return false;
         }
+
+        this.stats["lengths"]["base"] = this.baseIntervals.length;
+        this.stats["lengths"]["attempt"] = this.attemptIntervals.length;
+
         if (this.baseIntervals.length !== this.attemptIntervals.length) {
             console.log("Patterns are not of equal length");
             this.stats["matches"] = false;
@@ -128,8 +132,6 @@ class Passcode {
         let matches = successes >= requiredSuccesses
 
         this.stats["matches"] = matches;
-        this.stats["lengths"]["base"] = this.baseIntervals.length;
-        this.stats["lengths"]["attempt"] = this.attemptIntervals.length;
         this.stats["intervals"]["possible"] = this.baseIntervals.length;
         this.stats["intervals"]["required"] = requiredSuccesses;
         this.stats["intervals"]["received"] = successes;
