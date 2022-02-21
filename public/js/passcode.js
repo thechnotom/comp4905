@@ -10,6 +10,7 @@ class Passcode {
         this.baseIntervals = baseIntervals;
 
         this.finished = false;
+        this.stats = this.createStatisticsStorage();
     }
 
     addTime (time) {
@@ -71,6 +72,10 @@ class Passcode {
             console.log("Ratio successes: possible=" + baseRatios.length + ", required=" + requiredSuccesses + ", received=" + successes);
         }
 
+        this.stats["ratios"]["possible"].push(baseRatios.length);
+        this.stats["ratios"]["required"].push(requiredSuccesses);
+        this.stats["ratios"]["received"].push(successes);
+
         return successes >= requiredSuccesses;
     }
 
@@ -94,8 +99,11 @@ class Passcode {
         }
         if (this.baseIntervals.length !== this.attemptIntervals.length) {
             console.log("Patterns are not of equal length");
+            this.stats["matches"] = false;
+            this.stats["equalLength"] = false;
             return false;
         }
+        this.stats["equalLength"] = true;
 
         // convert interval success tolerance from a percentage to an integer
         let requiredSuccesses = Math.ceil(this.baseIntervals.length * (1 - this.intervalSuccessTolerance));
@@ -117,13 +125,49 @@ class Passcode {
             console.log("Interval successes: required=" + requiredSuccesses + ", received=" + successes);
         }
 
-        return successes >= requiredSuccesses;
+        let matches = successes >= requiredSuccesses
+
+        this.stats["matches"] = matches;
+        this.stats["lengths"]["base"] = this.baseIntervals.length;
+        this.stats["lengths"]["attempt"] = this.attemptIntervals.length;
+        this.stats["intervals"]["possible"] = this.baseIntervals.length;
+        this.stats["intervals"]["required"] = requiredSuccesses;
+        this.stats["intervals"]["received"] = successes;
+        
+        return matches;
+    }
+
+    createStatisticsStorage () {
+        return {
+            "matches" : null,
+            "equalLength" : null,
+            "lengths" : {
+                "base" : -1,
+                "attempt" : -1,
+            },
+            "tolerances" : {
+                "intervalSuccess" : this.intervalSuccessTolerance,
+                "ratioSuccess" : this.ratioSuccessTolerance,
+                "ratioEquivalence" : this.ratioEquivalenceTolerance
+            },
+            "ratios" : {
+                "possible" : [],
+                "required" : [],
+                "received" : []
+            },
+            "intervals" : {
+                "possible" : -1,
+                "required" : -1,
+                "received" : -1
+            }
+        }
     }
 
     calcResult () {
         this.finished = true;
         this.convertToIntervals();
-        return this.isMatch(true);
+        this.isMatch(true);
+        return this.stats;
     }
 
 }

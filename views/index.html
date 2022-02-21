@@ -13,25 +13,55 @@
         <link rel="stylesheet" href="public/styles/style.css">
     </head>
     <body>
+        <div class="block">
+            <b>Exploring Rhythm-Based Passcodes for the Web</b>
+            <br>
+            Participant #<span id="user-id">???</span>
+        </div>
         <div class="grid-upper">
-            <div class="grid-upper-child">
+            <div class="grid-upper-child block">
                 Application under development
-                <br>
-                <button id="play-audio">Play</button>
+                <hr>
+                <button id="play-audio"><img src="public/images/play.png" height="10px"> Play</button>
                 <button id="next-audio">Next</button>
-                <div id="click-area" class="unselected">
+                <div id="recording-toggle" class="unselected">
+                    <br>
                     Click here to start/stop rhythm entry
                     <br>
-                    <span id="recording-status">Not Recording</span>
+                    <b><span id="recording-status">Not Recording</span></b>
+                    <br>
+                    <br>
                 </div>
-                Result: <span id="attempt-result">N/A</span>
             </div>
-            <div class="grid-upper-child">
-                Here is more text!
+            <div class="grid-upper-child block">
+                Stages
+                <hr>
+                <table id="stage-table">
+                </table>
+            </div>
+            <div class="grid-upper-child block">
+                Statistics
+                <hr>
+                <table id="stat-table">
+                    <tr>
+                        <td>Success</td>
+                        <td><span id="stat-result">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td>Accuracy</td>
+                        <td><span id="stat-accuracy">N/A</span></td>
+                    </tr>
+                </table>
             </div>
         </div>
-        <div class="bottom-block">
-            Instructions go here.
+        <div class="bottom-block block">
+            Instructions
+            <hr>
+            <ol>
+                <li>This lsit will contain instructions.</li>
+                <li>Ideally, users will not need further prompting.</li>
+                <li>These lines are filler text.</li>
+            </ol>
         </div>
     </body>
 </html>

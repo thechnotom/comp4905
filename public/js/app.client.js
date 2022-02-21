@@ -3,6 +3,31 @@ class App {
     constructor () {
         this.currentAudio = 0;
         this.recording = null;
+        this.userID = -1;
+    }
+
+    pageSetup () {
+        // get up user ID
+        let result = null;
+        while (result == null || isNaN(result) || result < 0) {
+            result = parseInt(prompt("Enter your user ID (provided by researcher)"));
+        }
+        this.userID = result;
+        $("#user-id").text(this.userID);
+
+        // set up stages table
+        let stageTable = document.getElementById("stage-table");
+        for (let i = 0; i < this.audioData.length; ++i) {
+            let name = this.audioData[i]["filename"];
+            let row = document.createElement("tr");
+            row.setAttribute("id", "stage-table-" + name);
+            let item = document.createElement("td");
+            let text = document.createTextNode(name);
+            item.appendChild(text);
+            row.appendChild(item);
+            stageTable.appendChild(row);
+        }
+        this.highlightStage();
     }
 
     beginRecording () {
@@ -10,15 +35,41 @@ class App {
     }
 
     finishRecording () {
-        let result = this.recording.calcResult();
-        console.log("RESULT: " + result);
-        this.sendAttemptResults({ "result" : result });
-        return result;
+        let results = this.recording.calcResult();
+        console.log("RESULT: " + results["matches"]);
+        this.displayResults(results);
+        this.sendAttemptResults(results);
+        return results;
     }
 
     sendAttemptResults (results) {
         console.log("emiting 'attempt'");
-        this.socket.emit("attempt", results);
+        this.socket.emit("attempt", { "userID" : this.userID, "results" : results });
+    }
+
+    displayResults (results) {
+        $("#stat-result").text(results["matches"] ? "True" : "False");
+        let possible = results["ratios"]["possible"];
+        let received = results["ratios"]["received"];
+        let accuracy = 0
+        for (let i = 0; i < possible.length; ++i) {
+            accuracy += ((received[i] / possible[i]) * 100) / possible.length;
+        }
+        $("#stat-accuracy").text(Math.round(accuracy) + "%");
+    }
+
+    highlightStage () {
+        let stage = document.getElementById("stage-table-" + this.audioData[this.currentAudio]["filename"]);
+        for (let i = 0; i < this.audioData.length; ++i) {
+            document.getElementById("stage-table-" + this.audioData[i]["filename"]).classList.remove("highlighted");
+        }
+        stage.classList.add("highlighted");
+    }
+
+    nextStage () {
+        this.currentAudio = (this.currentAudio + 1) % this.audioData.length;
+        this.highlightStage();
+        console.log("advancing to: " + this.audioData[this.currentAudio]["filename"]);
     }
 
     registerClientActions () {
@@ -31,12 +82,11 @@ class App {
         });
 
         $("#next-audio").click(function () {
-            caller.currentAudio = (caller.currentAudio + 1) % caller.audioData.length;
-            console.log("advancing to: " + caller.audioData[caller.currentAudio]["filename"]);
+            caller.nextStage();
         });
 
-        $("#click-area").click(function () {
-            let click_element = document.getElementById("click-area");
+        $("#recording-toggle").click(function () {
+            let click_element = document.getElementById("recording-toggle");
             if (click_element.getAttribute("class") === "unselected") {
                 click_element.setAttribute("class", "selected");
                 $("#recording-status").text("Recording Active");
@@ -45,8 +95,7 @@ class App {
             else {
                 click_element.setAttribute("class", "unselected");
                 $("#recording-status").text("Not Recording");
-                let result = caller.finishRecording();
-                $("#attempt-result").text(result ? "success" : "failure");
+                caller.finishRecording();
             }
         });
 
@@ -64,13 +113,11 @@ class App {
         this.socket.on('information', function (data) {
             console.log("client receive 'information' from server");
             caller.audioData = data["audio"];
+            caller.pageSetup();
         });
     }
 
     init () {
-        //let socket = io.connect('http://localhost:3000');
-        //let socket = io.connect('0.0.0.0:3000');
-        //let socket = io.connect('192.168.0.48:3000');
         let socket = io.connect();
         this.socket = socket;
         this.registerClientActions();

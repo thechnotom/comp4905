@@ -36,10 +36,22 @@ class AppServer {
 
     handleAttemptResults (data) {
         console.log("server received attempt data");
-        let logString = (new Date()).toString() + " -> result=" + data.result + "\n";
+        let logString = this.generateLogString(data);
         fs.appendFile(this.logFilename, logString, function () {
             console.log("writing attempt data to log: " + logString);
         });
+    }
+
+    generateLogString (data) {
+        let result = (new Date()).toString();
+        result += ",user=" + data["userID"];
+        result += ",match=" + data["results"]["matches"];
+        result += ",bLen=" + data["results"]["lengths"]["base"];
+        result += ",aLen=" + data["results"]["lengths"]["attempt"];
+        result += ",intSuc_pos=" + data["results"]["intervals"]["possible"];
+        result += ",intSuc_req=" + data["results"]["intervals"]["required"];
+        result += ",intSuc_res=" + data["results"]["intervals"]["received"];
+        return result;
     }
 
     registerSocketIO (io) {
