@@ -4,6 +4,7 @@ class App {
         this.currentAudio = 0;
         this.recording = null;
         this.userID = -1;
+        this.completedStage = false;
     }
 
     pageSetup () {
@@ -61,14 +62,15 @@ class App {
     highlightStage () {
         let stage = document.getElementById("stage-table-" + this.audioData[this.currentAudio]["filename"]);
         for (let i = 0; i < this.audioData.length; ++i) {
-            document.getElementById("stage-table-" + this.audioData[i]["filename"]).classList.remove("highlighted");
+            document.getElementById("stage-table-" + this.audioData[i]["filename"]).classList.remove("highlighted-stage");
         }
-        stage.classList.add("highlighted");
+        stage.classList.add("highlighted-stage");
     }
 
     nextStage () {
         this.currentAudio = (this.currentAudio + 1) % this.audioData.length;
         this.highlightStage();
+        this.completedStage = false;
         console.log("advancing to: " + this.audioData[this.currentAudio]["filename"]);
     }
 
@@ -83,19 +85,28 @@ class App {
 
         $("#next-audio").click(function () {
             caller.nextStage();
+            document.getElementById("next-audio").toggleAttribute("disabled", true);
+            document.getElementById("next-audio").classList.remove("highlighted-button");
         });
 
         $("#recording-toggle").click(function () {
+            if (caller.completedStage) {
+                return;
+            }
             let click_element = document.getElementById("recording-toggle");
             if (click_element.getAttribute("class") === "unselected") {
                 click_element.setAttribute("class", "selected");
+                document.getElementById("next-audio").toggleAttribute("disabled", true);
                 $("#recording-status").text("Recording Active");
                 caller.beginRecording();
             }
             else {
+                caller.completedStage = true;
                 click_element.setAttribute("class", "unselected");
                 $("#recording-status").text("Not Recording");
                 caller.finishRecording();
+                document.getElementById("next-audio").toggleAttribute("disabled", false);
+                document.getElementById("next-audio").classList.add("highlighted-button");
             }
         });
 
