@@ -51,6 +51,7 @@ class AppServer {
         result += ",intSuc_pos=" + data["results"]["intervals"]["possible"];
         result += ",intSuc_req=" + data["results"]["intervals"]["required"];
         result += ",intSuc_res=" + data["results"]["intervals"]["received"];
+        result += "\n";
         return result;
     }
 
