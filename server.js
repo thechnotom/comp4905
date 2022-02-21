@@ -44,12 +44,16 @@ class AppServer {
     registerSocketIO (io) {
         let caller = this;
 
-        io.sockets.on('connection', function (socket) {
-            console.log('User connected');
-            socket.emit("information", caller.gatherAudioData());
+        io.sockets.on("connection", function (socket) {
+            console.log("User connected (" + (new Date()).toString() + ")");
+            socket.emit("audioData", caller.gatherAudioData());
 
             socket.on("attempt", function (data) {
                 caller.handleAttemptResults(data);
+            });
+
+            socket.on("disconnect", function () {
+                console.log("User disconnected (" + (new Date()).toString() + ")");
             });
         });
     }

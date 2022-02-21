@@ -17,11 +17,12 @@
         <div class="block">
             <b>Exploring Rhythm-Based Passcodes for the Web</b>
             <br>
-            Participant #<span id="user-id">???</span>
+            Participant #<span id="user-id">???</span>,
+            Session #<span id="session-num">???</span>
         </div>
         <div class="grid-upper">
             <div class="grid-upper-child block">
-                Application under development
+                Rhythm Entry
                 <hr>
                 <button id="play-audio"><img src="public/images/play.png" height="10px" /> Play</button>
                 <button id="next-audio" disabled autocomplete="off">Next</button>
@@ -59,13 +60,15 @@
             Instructions
             <hr>
             <ol>
-                <li>This list will contain instructions.</li>
-                <li>Ideally, users will not need further prompting.</li>
-                <li>These lines are filler text.</li>
+                <li id="instruction-1">Click the "Play" button to listen to a melody. You may do this as many times as you wish.</li>
+                <li>Click the red area to make the application listen for your input.</li>
+                <li>Tap your spacebar to enter the rhythm.</li>
+                <li>Once you are finished, click the green area to conclude recording.</li>
+                <li>Click "Next" to move to the next stage. Practice stages can be done several times. Only press "Next" when you are finished.</li>
             </ol>
         </div>
         <div class="log-block block">
-            Logs
+            Logs (<span id="log-count">0</span>)
             <button id="log-copy"><img src="public/images/copy.png" height="12px" /> Copy</button>
             <hr>
             <textarea id="log-textarea" rows="5" readonly autocomplete="off"></textarea>
