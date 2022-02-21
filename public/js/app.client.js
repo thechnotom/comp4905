@@ -1,7 +1,7 @@
 class App {
 
     constructor () {
-        this.currentAudio = 0;
+        this.currentStage = 0;
         this.recording = null;
         this.userID = -1;
         this.completedStage = false;
@@ -19,7 +19,7 @@ class App {
         // set up stages table
         let stageTable = document.getElementById("stage-table");
         for (let i = 0; i < this.audioData.length; ++i) {
-            let name = this.audioData[i]["filename"];
+            let name = this.audioData[i]["stage"];
             let row = document.createElement("tr");
             row.setAttribute("id", "stage-table-" + name);
             let item = document.createElement("td");
@@ -32,20 +32,36 @@ class App {
     }
 
     beginRecording () {
-        this.recording = new Passcode(this.audioData[this.currentAudio]["intervals_ms"]);
+        this.recording = new Passcode(this.audioData[this.currentStage]["intervals_ms"]);
     }
 
     finishRecording () {
         let results = this.recording.calcResult();
         console.log("RESULT: " + results["matches"]);
         this.displayResults(results);
-        this.sendAttemptResults(results);
+        let logLine = this.generateLogString(results);
+        document.getElementById("log-textarea").value += logLine + "\n";
+        this.sendAttemptResults(logLine);
         return results;
     }
 
-    sendAttemptResults (results) {
+    sendAttemptResults (logLine) {
         console.log("emiting 'attempt'");
-        this.socket.emit("attempt", { "userID" : this.userID, "results" : results });
+        this.socket.emit("attempt", { "log" : logLine });
+    }
+
+    generateLogString (data) {
+        let result = (new Date()).toString();
+        result += ",user=" + this.userID;
+        result += ",type=" + (this.isPracticeStage() ? "practice" : "trial");
+        result += ",stage=" + this.audioData[this.currentStage]["stage"];
+        result += ",match=" + data["matches"];
+        result += ",bLen=" + data["lengths"]["base"];
+        result += ",aLen=" + data["lengths"]["attempt"];
+        result += ",intSuc_pos=" + data["intervals"]["possible"];
+        result += ",intSuc_req=" + data["intervals"]["required"];
+        result += ",intSuc_res=" + data["intervals"]["received"];
+        return result;
     }
 
     displayResults (results) {
@@ -59,27 +75,51 @@ class App {
         $("#stat-accuracy").text(Math.round(accuracy) + "%");
     }
 
-    highlightStage () {
-        let stage = document.getElementById("stage-table-" + this.audioData[this.currentAudio]["filename"]);
+    clearResults () {
+        $("#stat-result").text("N/A");
+        $("#stat-accuracy").text("N/A");
+    }
+
+    highlightStage (finished=false) {
         for (let i = 0; i < this.audioData.length; ++i) {
-            document.getElementById("stage-table-" + this.audioData[i]["filename"]).classList.remove("highlighted-stage");
+            document.getElementById("stage-table-" + this.audioData[i]["stage"]).classList.remove("highlighted-stage");
         }
+        if (finished) {
+            return;
+        }
+        let stage = document.getElementById("stage-table-" + this.audioData[this.currentStage]["stage"]);
         stage.classList.add("highlighted-stage");
     }
 
     nextStage () {
-        this.currentAudio = (this.currentAudio + 1) % this.audioData.length;
-        this.highlightStage();
+        //this.currentStage = (this.currentStage + 1) % this.audioData.length;
+        ++this.currentStage;
+        this.highlightStage(this.isFinished());
+        this.clearResults();
         this.completedStage = false;
-        console.log("advancing to: " + this.audioData[this.currentAudio]["filename"]);
+        if (this.isFinished()) {
+            this.completedStage = true;
+            document.getElementById("play-audio").toggleAttribute("disabled", true);
+            console.log("end of audio data");
+            return;
+        }
+        console.log("advancing to: " + this.audioData[this.currentStage]["filename"]);
+    }
+
+    isPracticeStage () {
+        return this.audioData[this.currentStage]["order"] < 0;
+    }
+
+    isFinished () {
+        return this.currentStage >= this.audioData.length;
     }
 
     registerClientActions () {
         let caller = this;
 
         $("#play-audio").click(function () {
-            document.getElementById("audio").setAttribute("src", "audio/mp3/" + caller.audioData[caller.currentAudio]["filename"]);
-            console.log("playing: " + caller.audioData[caller.currentAudio]["filename"]);
+            document.getElementById("audio").setAttribute("src", "audio/mp3/" + caller.audioData[caller.currentStage]["filename"]);
+            console.log("playing: " + caller.audioData[caller.currentStage]["filename"]);
             document.getElementById("audio").play();
         });
 
@@ -101,13 +141,20 @@ class App {
                 caller.beginRecording();
             }
             else {
-                caller.completedStage = true;
+                if (!caller.isPracticeStage()) {
+                    caller.completedStage = true;
+                }
                 click_element.setAttribute("class", "unselected");
                 $("#recording-status").text("Not Recording");
                 caller.finishRecording();
                 document.getElementById("next-audio").toggleAttribute("disabled", false);
                 document.getElementById("next-audio").classList.add("highlighted-button");
             }
+        });
+
+        $("#log-copy").click(function () {
+            navigator.clipboard.writeText(document.getElementById("log-textarea").value);
+            alert("Logs copied to clipboard");
         });
 
         $(document).on("keypress", function (e) {
@@ -124,7 +171,7 @@ class App {
         this.socket.on('information', function (data) {
             console.log("client receive 'information' from server");
             caller.audioData = data["audio"];
-            caller.pageSetup();
+            caller.pageSetup("stage");
         });
     }
 

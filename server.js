@@ -1,9 +1,9 @@
-import { createServer } from 'http';
-import express from 'express';
-import fs, { readFile } from 'fs';
-import url, {parse, fileURLToPath} from 'url';
-import { Server } from 'socket.io';
-import path from 'path'
+import { createServer } from "http";
+import express from "express";
+import fs, { readFile } from "fs";
+import url, {parse, fileURLToPath} from "url";
+import { Server } from "socket.io";
+import path from "path";
 
 class AppServer {
     
@@ -18,41 +18,27 @@ class AppServer {
 
     gatherAudioData () {
         let result = {"audio" : []};
-        let audioFiles = fs.readdirSync("audio/mp3/");
         let jsonFiles = fs.readdirSync("audio/json");
-        for (let i = 0; i < audioFiles.length; ++i) {
-            let targetJSON = audioFiles[i].substring(0, audioFiles[i].lastIndexOf(".")) + ".json";
-            // ensure corresponding JSON exists
-            if (jsonFiles.includes(targetJSON)) {
-                let intervals = JSON.parse(fs.readFileSync("audio/json/" + targetJSON))["intervals_ms"];
-                result["audio"].push({ "filename" : audioFiles[i], "intervals_ms" : intervals });
-            }
-            else {
-                console.log("Unable to find JSON corresponding to: " + audioFiles[i]);
-            }
+        for (let i = 0; i < jsonFiles.length; ++i) {
+            let parsedData = JSON.parse(fs.readFileSync("audio/json/" + jsonFiles[i]));
+            result["audio"].push({
+                "filename" : parsedData["mp3"],
+                "intervals_ms" : parsedData["intervals_ms"],
+                "stage" : parsedData["stage"],
+                "order" : parsedData["order"]
+            });
         }
+        result["audio"].sort(function (a, b) {
+            return a["order"] - b["order"];
+        });
         return result;
     }
 
     handleAttemptResults (data) {
         console.log("server received attempt data");
-        let logString = this.generateLogString(data);
-        fs.appendFile(this.logFilename, logString, function () {
-            console.log("writing attempt data to log: " + logString);
+        fs.appendFile(this.logFilename, data["log"] + "\n", function () {
+            console.log("writing attempt data to log: " + data["log"]);
         });
-    }
-
-    generateLogString (data) {
-        let result = (new Date()).toString();
-        result += ",user=" + data["userID"];
-        result += ",match=" + data["results"]["matches"];
-        result += ",bLen=" + data["results"]["lengths"]["base"];
-        result += ",aLen=" + data["results"]["lengths"]["attempt"];
-        result += ",intSuc_pos=" + data["results"]["intervals"]["possible"];
-        result += ",intSuc_req=" + data["results"]["intervals"]["required"];
-        result += ",intSuc_res=" + data["results"]["intervals"]["received"];
-        result += "\n";
-        return result;
     }
 
     registerSocketIO (io) {

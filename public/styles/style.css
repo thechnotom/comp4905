@@ -53,7 +53,7 @@ button {
     margin: 5px;
 }
 
-#next-audio:disabled {
+button:disabled {
     background-color: rgb(126, 126, 126);
 }
 
@@ -63,4 +63,16 @@ hr {
 
 .highlighted-button {
     background-color: rgb(136, 219, 136);
+}
+
+textarea {
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#log-copy {
+    padding: 2px 2px;
 }

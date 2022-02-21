@@ -1,1 +1,6 @@
-{"intervals_ms": [1000, 1000, 1000, 1000]}
+{
+    "intervals_ms": [1000, 1000, 1000, 1000],
+    "stage": "Practice",
+    "order": -1,
+    "mp3": "test.mp3"
+}
