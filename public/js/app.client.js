@@ -169,7 +169,7 @@ class App {
         let caller = this;
 
         this.socket.on('information', function (data) {
-            console.log("client receive 'information' from server");
+            console.log("client received 'information' from server");
             caller.audioData = data["audio"];
             caller.pageSetup("stage");
         });
