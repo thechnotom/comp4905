@@ -39,7 +39,7 @@ class App {
         $("#session-num").text(this.sessionNum);
 
         // set up session label and instructions
-        if (this.sessionNum > 1) {
+        if (!this.canPlayAudio()) {
             document.getElementById("play-audio").toggleAttribute("disabled", true);
             $("#instruction-1").text("Recall the melody for the stage. Playback is disabled for this session.");
         }
@@ -177,7 +177,10 @@ class App {
             return;
         }
 
-        document.getElementById("play-audio").toggleAttribute("disabled", false);
+        if (this.canPlayAudio()) {
+            document.getElementById("play-audio").toggleAttribute("disabled", false);
+        }
+
         document.getElementById("recording-toggle").setAttribute("class", "unselected");
         console.log("advancing to: " + this.audioData[this.currentStage]["filename"]);
     }
@@ -188,6 +191,13 @@ class App {
      */
     isPracticeStage () {
         return this.audioData[this.currentStage]["order"] < 0;
+    }
+
+    /*
+     * Determine if the client can listen to the audio
+     */
+    canPlayAudio () {
+        return this.sessionNum < 2;
     }
 
     /*
