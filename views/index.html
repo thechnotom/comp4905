@@ -4,14 +4,14 @@
     <head>
         <meta charset="utf-8" />
         <title>COMP 4905 Project</title>
-        <link rel="icon" type="image/x-icon" href="public/images/favicon.png" />
-        <script type="text/javascript" src="public/js/jquery.min.js"></script>
+        <link rel="icon" type="image/x-icon" href="images/favicon.png" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="public/js/passcode.js"></script>
-        <script type="text/javascript" src="public/js/app.client.js"></script>
+        <script type="text/javascript" src="js/passcode.js"></script>
+        <script type="text/javascript" src="js/app.client.js"></script>
         <!--- <audio id="test-audio" src="audio/test.mp3"></audio> --->
         <audio id="audio"></audio>
-        <link rel="stylesheet" href="public/styles/style.css">
+        <link rel="stylesheet" href="styles/style.css">
     </head>
     <body>
         <div class="block">
@@ -24,7 +24,7 @@
             <div class="grid-upper-child block">
                 Rhythm Entry
                 <hr>
-                <button id="play-audio"><img src="public/images/play.png" height="10px" /> Play</button>
+                <button id="play-audio"><img src="images/play.png" height="10px" /> Play</button>
                 <button id="next-audio" disabled autocomplete="off">Next</button>
                 <div id="recording-toggle" class="unselected">
                     <br>
@@ -69,7 +69,8 @@
         </div>
         <div class="log-block block">
             Logs (<span id="log-count">0</span>)
-            <button id="log-copy"><img src="public/images/copy.png" height="12px" /> Copy</button>
+            <button id="log-copy"><img src="images/copy.png" height="12px" /> Copy</button>
+            <button id="log-send"><img src="images/send.png" height="12px" /> Send</button>
             <hr>
             <textarea id="log-textarea" rows="5" readonly autocomplete="off"></textarea>
         </div>

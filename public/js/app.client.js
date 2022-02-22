@@ -8,6 +8,7 @@ class App {
         this.sessionNum = -1;
         this.logCount = 0;
         this.receivedData = false;
+        this.logs = [];
     }
 
     pageSetup () {
@@ -65,8 +66,14 @@ class App {
     }
 
     sendAttemptResults (logLine) {
+        this.logs.push(logLine);
         console.log("emiting 'attempt'");
         this.socket.emit("attempt", { "log" : logLine });
+    }
+
+    sendAllLogs () {
+        console.log("emitting 'all-attempts'");
+        this.socket.emit("all-attempts", { "logs" : this.logs });
     }
 
     generateLogString (data) {
@@ -194,6 +201,12 @@ class App {
         $("#log-copy").click(function () {
             navigator.clipboard.writeText(document.getElementById("log-textarea").value);
             alert("Logs copied to clipboard");
+        });
+
+        $("#log-send").click(function () {
+            if (confirm("Are you sure you want to send all current logs to the server?")) {
+                caller.sendAllLogs();
+            }
         });
 
         $(document).on("keypress", function (e) {
