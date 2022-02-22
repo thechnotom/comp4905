@@ -65,8 +65,8 @@ def create_dict (intervals, stage, order, mp3_filename):
 
 # Driver code
 def main ():
-    if (len(sys.argv) != 4 or len(sys.argv) != 5):
-        print("Usage: createJSON.py <MIDI path> <stage> <order> [MP3 filename]")
+    if (len(sys.argv) != 4 and len(sys.argv) != 5):
+        print("Usage: create_json.py <MIDI path> <stage> <order> [MP3 filename]")
         print("Note: <MP3 filename> is just the file's name (not the path)")
         quit()
 
@@ -78,7 +78,7 @@ def main ():
         print("\"order\" must be an integer")
 
     # determine if the mp3_filename is provided or if it needs to be generated
-    filename_no_extension = sys.argv[1][:sys.argv[1].rfind(".")]
+    filename_no_extension = sys.argv[1][max(sys.argv[1].rfind("/"), sys.argv[1].rfind("\\")) + 1:sys.argv[1].rfind(".")]
     mp3_filename = None
     if (len(sys.argv) == 4):
         mp3_filename = filename_no_extension + ".mp3"
@@ -89,7 +89,7 @@ def main ():
     intervals = get_midi_intervals(MidiFile(sys.argv[1], clip=True))
 
     # create dictionary
-    json_data = create_dict(intervals, sys.argv[2], int(order), sys.argv[4])
+    json_data = create_dict(intervals, sys.argv[2], int(order), mp3_filename)
 
     # convert dictionary to a JSON string
     json_output = json.dumps(json_data)

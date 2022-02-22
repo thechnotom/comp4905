@@ -15,7 +15,7 @@ class Passcode {
      * ratioEquivalenceTolerance: how close two ratios need to be to be considered equivalent
      * ratioSuccessTolerance: percentage of individual ratios that need to match
      */
-    constructor (baseIntervals=[], intervalSuccessTolerance=0.25, ratioEquivalenceTolerance=0.25, ratioSuccessTolerance=0.25) {
+    constructor (baseIntervals=[], intervalSuccessTolerance=0.25, ratioEquivalenceTolerance=0.30, ratioSuccessTolerance=0.25) {
         this.intervalSuccessTolerance = intervalSuccessTolerance;
         this.ratioEquivalenceTolerance = ratioEquivalenceTolerance;
         this.ratioSuccessTolerance = ratioSuccessTolerance;
