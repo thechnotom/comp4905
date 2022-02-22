@@ -11,11 +11,12 @@ class App {
         this.currentStage = 0;
         this.recording = null;
         this.userID = -1;
-        this.completedStage = false;
         this.sessionNum = -1;
         this.logCount = 0;
         this.receivedData = false;
         this.logs = [];
+        this.currentTry = 1;
+        this.maxTries = 3;
     }
 
     /*
@@ -45,10 +46,17 @@ class App {
         $("#user-id").text(this.userID);
         $("#session-num").text(this.sessionNum);
 
+        // set up the try statistics
+        this.updateTryInformation();
+
         // set up session label and instructions
         if (!this.canPlayAudio()) {
             document.getElementById("play-audio").toggleAttribute("disabled", true);
             $("#instruction-1").text("Recall the melody for the stage. Playback is disabled for this session.");
+        }
+        $("#instruction-max-tries").text(this.maxTries);
+        if (this.maxTries !== 1) {
+            $("#instructions-max-tries-s").text("s");
         }
 
         // set up stages table
@@ -88,6 +96,8 @@ class App {
         results["extra"]["type"] = (this.isPracticeStage() ? "practice" : "trial");
         results["extra"]["stage"] = this.audioData[this.currentStage]["stage"];
         results["extra"]["order"] = this.audioData[this.currentStage]["order"];
+        results["extra"]["try"] = this.currentTry;
+        results["extra"]["maxTries"] = (this.isPracticeStage() ? "unlimited" : this.maxTries);
 
         console.log("RESULT: " + results["matches"]);
         this.displayResults(results);
@@ -150,6 +160,21 @@ class App {
     }
 
     /*
+     * Update the web space to represent the number of maximum tries
+     */
+    updateTryInformation () {
+        if (this.currentTry <= this.maxTries || this.isPracticeStage()) {
+            $("#current-try").text(this.currentTry);
+        }
+        if (this.isPracticeStage()) {
+            $("#max-tries").text("unlimited");
+        }
+        else {
+            $("#max-tries").text(this.maxTries);
+        }
+    }
+
+    /*
      * Highlight the current stage in the stage list (highlight none if finished)
      * finished: whether all stages have been completed
      */
@@ -169,12 +194,13 @@ class App {
      */
     nextStage () {
         ++this.currentStage;
-        this.highlightStage(this.isFinished());
+        this.currentTry = 1;
+        this.updateTryInformation();
+        this.highlightStage(this.isFinishedAll());
         this.clearResults();
         this.stopAudio();
-        this.completedStage = false;
-        if (this.isFinished()) {
-            this.completedStage = true;
+        if (this.isFinishedAll()) {
+            document.getElementById("recording-toggle").setAttribute("class", "unselectable");
             console.log("end of audio data");
             return;
         }
@@ -183,6 +209,7 @@ class App {
             document.getElementById("play-audio").toggleAttribute("disabled", false);
         }
 
+        $("current-try").text(this.currentTry);
         document.getElementById("recording-toggle").setAttribute("class", "unselected");
         console.log("advancing to: " + this.audioData[this.currentStage]["filename"]);
     }
@@ -192,6 +219,9 @@ class App {
      * return: Boolean
      */
     isPracticeStage () {
+        if (this.currentStage >= this.audioData.length) {
+            return false;
+        }
         return this.audioData[this.currentStage]["order"] < 0;
     }
 
@@ -200,7 +230,6 @@ class App {
      * return: Boolean
      */
     canPlayAudio () {
-        console.log("canPlayAudio: " + this.sessionNum < 2);
         return this.sessionNum < 2;
     }
 
@@ -208,8 +237,16 @@ class App {
      * Determines if the all stages have been completed
      * return: Boolean
      */
-    isFinished () {
+    isFinishedAll () {
         return this.currentStage >= this.audioData.length;
+    }
+
+    /*
+     * Determines if the all tries have been completed for the stage
+     * return: Boolean
+     */
+    isFinishedStage () {
+        return this.currentTry > this.maxTries && !this.isPracticeStage();
     }
 
     /*
@@ -243,7 +280,7 @@ class App {
         // recording start/stop area is clicked
         $("#recording-toggle").click(function () {
             // if the stage is completed, ignore further clicks until the next stage
-            if (caller.completedStage) {
+            if (caller.isFinishedStage() || caller.isFinishedAll()) {
                 return;
             }
 
@@ -260,22 +297,23 @@ class App {
             }
             // the button is selected (the user is trying to stop recording)
             else if (clickElement.getAttribute("class") === "selected") {
-                if (!caller.isPracticeStage()) {
-                    caller.completedStage = true;
-                }
-                if (caller.isPracticeStage()) {
+                if (!caller.isFinishedStage()) {
                     if (caller.canPlayAudio()) {
                         document.getElementById("play-audio").toggleAttribute("disabled", false);
                     }
                     clickElement.setAttribute("class", "unselected");
                 }
-                else {
-                    clickElement.setAttribute("class", "unselectable");
-                }
                 $("#recording-status").text("Not Recording");
                 caller.finishRecording();
+                ++caller.currentTry;
+                caller.updateTryInformation();
+                if (caller.isFinishedStage()) {
+                    clickElement.setAttribute("class", "unselectable");
+                }
                 document.getElementById("next-audio").toggleAttribute("disabled", false);
-                document.getElementById("next-audio").classList.add("highlighted-button");
+                if (caller.isFinishedStage()) {
+                    document.getElementById("next-audio").classList.add("highlighted-button");
+                }
             }
             // if not in one of the conditionals, the session is done
         });
