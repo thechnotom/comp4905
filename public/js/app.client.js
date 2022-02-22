@@ -172,6 +172,10 @@ class App {
         else {
             $("#max-tries").text(this.maxTries);
         }
+        if (this.isFinishedAll()) {
+            $("#current-try").text("-");
+            $("#max-tries").text("-");
+        }
     }
 
     /*
@@ -200,6 +204,7 @@ class App {
         this.clearResults();
         this.stopAudio();
         if (this.isFinishedAll()) {
+            document.getElementById("play-audio").toggleAttribute("disabled", true);
             document.getElementById("recording-toggle").setAttribute("class", "unselectable");
             console.log("end of audio data");
             return;
@@ -207,6 +212,11 @@ class App {
 
         if (this.canPlayAudio()) {
             document.getElementById("play-audio").toggleAttribute("disabled", false);
+        }
+
+        // if the user is on the last stage
+        if (this.currentStage == this.audioData.length - 1) {
+            $("#next-audio").text("Finish");
         }
 
         $("current-try").text(this.currentTry);

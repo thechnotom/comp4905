@@ -23,8 +23,15 @@
             <div class="grid-upper-child block">
                 Rhythm Entry
                 <hr>
-                <button id="play-audio"><img src="images/play.png" height="10px" /> Play</button>
-                <button id="next-audio" disabled autocomplete="off">Next</button>
+                <div class="grid-rhythm-entry-top">
+                    <div class="grid-rhythm-entry-top-child">
+                        <button id="play-audio"><img src="images/play.png" height="10px" /> Play</button>
+                        <button id="next-audio" disabled autocomplete="off">Next</button>
+                    </div>
+                    <div id="tries" class="grid-rhythm-entry-top-child block">
+                        Try: <span id="current-try">?</span> of <span id="max-tries">?</span>
+                    </div>
+                </div>
                 <div id="recording-toggle" class="unselected">
                     <br>
                     Click here to start/stop rhythm entry
@@ -44,10 +51,6 @@
                 Statistics
                 <hr>
                 <table id="stat-table">
-                    <tr>
-                        <td>Try:</td>
-                        <td><span id="current-try">?</span> of <span id="max-tries">?</span></td>
-                    </tr>
                     <tr>
                         <td>Success:</td>
                         <td><span id="stat-result">N/A</span></td>

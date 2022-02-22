@@ -19,6 +19,12 @@ body {
     margin-bottom: 5px;
 }
 
+.grid-rhythm-entry-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .unselected {
     background-color: rgb(175, 91, 91);
 }
@@ -83,4 +89,9 @@ textarea {
 
 #final-information {
     font-size: 12px;
+}
+
+#tries {
+    border: 0px;
+    background-color: rgba(0, 0, 0, 0.05);
 }
