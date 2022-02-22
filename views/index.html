@@ -9,7 +9,6 @@
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="js/passcode.js"></script>
         <script type="text/javascript" src="js/app.client.js"></script>
-        <!--- <audio id="test-audio" src="audio/test.mp3"></audio> --->
         <audio id="audio"></audio>
         <link rel="stylesheet" href="styles/style.css">
     </head>
@@ -46,11 +45,11 @@
                 <hr>
                 <table id="stat-table">
                     <tr>
-                        <td>Success</td>
+                        <td>Success:</td>
                         <td><span id="stat-result">N/A</span></td>
                     </tr>
                     <tr>
-                        <td>Accuracy</td>
+                        <td>Accuracy:</td>
                         <td><span id="stat-accuracy">N/A</span></td>
                     </tr>
                 </table>
@@ -72,7 +71,10 @@
             <button id="log-copy"><img src="images/copy.png" height="12px" /> Copy</button>
             <button id="log-send"><img src="images/send.png" height="12px" /> Send</button>
             <hr>
-            <textarea id="log-textarea" rows="5" readonly autocomplete="off"></textarea>
+            <textarea id="log-textarea" rows="5" readonly autocomplete="off" wrap="off"></textarea>
+        </div>
+        <div id="final-information">
+            Thomas Roller - COMP 4905 - Winter 2022
         </div>
     </body>
 </html>

@@ -35,7 +35,7 @@ body {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
-#recording-toggle {
+#recording-toggle, #final-information {
     text-align: center;
     border-radius: 5px;
     box-sizing: border-box;
@@ -79,4 +79,8 @@ textarea {
 
 #log-copy, #log-send {
     padding: 2px 2px;
+}
+
+#final-information {
+    font-size: 12px;
 }

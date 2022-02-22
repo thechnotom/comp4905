@@ -1,3 +1,10 @@
+/* 
+ * Thomas Roller
+ * COMP 4905 (Winter 2022)
+ *
+ * Server for the web application
+ */
+
 import { createServer } from "http";
 import express from "express";
 import fs, { readFile } from "fs";
@@ -7,6 +14,9 @@ import path from "path";
 
 class AppServer {
     
+    /*
+     * Initial variables are created
+     */
     constructor () {
         this.app = express();
         this.logFilename = "attempt_log.txt"
@@ -15,6 +25,10 @@ class AppServer {
         console.log("log file created");
     }
 
+    /*
+     * Gathers information from the JSON files in the json/ folder
+     * return: object with a list of information for each JSON file
+     */
     gatherAudioData () {
         let result = {"audio" : []};
         let jsonFiles = fs.readdirSync("public/audio/json");
@@ -33,11 +47,18 @@ class AppServer {
         return result;
     }
 
+    /*
+     * Write a string to the log
+     * logLine: the string to be written to the log
+     */
     handleAttemptResults (logLine) {
         console.log("writing attempt data to log: " + logLine);
         fs.appendFileSync(this.logFilename, logLine + "\n");
     }
 
+    /*
+     * Registers socket IO
+     */
     registerSocketIO (io) {
         let caller = this;
 
@@ -45,11 +66,13 @@ class AppServer {
             console.log("User connected (" + (new Date()).toString() + ")");
             socket.emit("audioData", caller.gatherAudioData());
 
+            // server receives a single attempt from a client
             socket.on("attempt", function (data) {
                 console.log("server received attempt data");
                 caller.handleAttemptResults(data["log"]);
             });
 
+            // server receives a list of attempts from a client
             socket.on("all-attempts", function (data) {
                 console.log("receiving all current logs");
                 caller.handleAttemptResults("all current logs");
@@ -64,6 +87,9 @@ class AppServer {
         });
     }
 
+    /*
+     * Performs initial operations
+     */
     init () {
         let caller = this;
         let __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -84,5 +110,6 @@ class AppServer {
     }
 }
 
+// driver code
 let appServer = new AppServer();
 appServer.init();

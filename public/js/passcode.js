@@ -1,5 +1,20 @@
+/* 
+ * Thomas Roller
+ * COMP 4905 (Winter 2022)
+ *
+ * Stores rhythm information and performs calculations
+ * Based on a previous personal project
+ */
+
 class Passcode {
 
+    /*
+     * Sets up variables
+     * baseIntervals: intervals of the expected rhythm
+     * intervalSuccessTolerance: percentage of intervals groups that need to match
+     * ratioEquivalenceTolerance: how close two ratios need to be to be considered equivalent
+     * ratioSuccessTolerance: percentage of individual ratios that need to match
+     */
     constructor (baseIntervals=[], intervalSuccessTolerance=0.25, ratioEquivalenceTolerance=0.25, ratioSuccessTolerance=0.25) {
         this.intervalSuccessTolerance = intervalSuccessTolerance;
         this.ratioEquivalenceTolerance = ratioEquivalenceTolerance;
@@ -13,17 +28,19 @@ class Passcode {
         this.stats = this.createStatisticsStorage();
     }
 
+    /*
+     * Adds a time to the rhythm
+     * time: time (in milliseconds, normally time from the Unix epoch)
+     */
     addTime (time) {
         if (!this.finished) {
             this.attemptTimes.push(time);
         }
     }
 
-    reset () {
-        this.attemptTimes = [];
-        this.attemptIntervals = [];
-    }
-
+    /*
+     * Converts a list of times to the intervals between entires
+     */
     convertToIntervals () {
         if (this.attemptTimes.length < 2) {
             return;
@@ -33,22 +50,40 @@ class Passcode {
         }
     }
 
-    static singleIntervalRatios (focusInterval, allIntervals) {
+    /*
+     * Calculates the ratios between a single interval and all other intervals (including itself)
+     * focusInterval: one interval from "intervals"
+     * intervals: list of intervals
+     * return: list of ratios
+     */
+    static singleIntervalRatios (focusInterval, intervals) {
         let ratios = [];
-        for (let i = 0; i < allIntervals.length; ++i) {
-            ratios.push(focusInterval / allIntervals[i]);
+        for (let i = 0; i < intervals.length; ++i) {
+            ratios.push(focusInterval / intervals[i]);
         }
         return ratios;
     }
 
-    static allIntervalRatios (allIntervals) {
+    /*
+     * Calculates the ratio list for each note in a given interval
+     * intervals: list of intervals
+     * return: list of list of ratios
+     */
+    static allIntervalRatios (intervals) {
         let ratios = [];
-        for (let i = 0; i < allIntervals.length; ++i) {
-            ratios.push(Passcode.singleIntervalRatios(allIntervals[i], allIntervals));
+        for (let i = 0; i < intervals.length; ++i) {
+            ratios.push(Passcode.singleIntervalRatios(intervals[i], intervals));
         }
         return ratios;
     }
 
+    /*
+     * Determine if a single interval's ratios (from the base) match a single interval's ratios (from the attempt)
+     * baseRatios: list of ratios for one interval from the base
+     * attemptRatios: list of ratios for one interval from the attempt
+     * DEBUG: whether to show debug messages
+     * return: whether the ratio lists match
+     */
     singleIntervalMatch (baseRatios, attempRatios, DEBUG=false) {
         if (baseRatios.length !== attempRatios.length) {
             return false;
@@ -79,6 +114,13 @@ class Passcode {
         return successes >= requiredSuccesses;
     }
 
+    /*
+     * Whether two values are within a given tolerance
+     * v1: first value
+     * v2: second value
+     * tolerance: tolerance (0 <= tolerance <= 1)
+     * return: Boolean
+     */
     static withinTolerance (v1, v2, tolerance) {
         return (
             (v1 * (1 - tolerance) <= v2 && v1 * (1 + tolerance) >= v2) ||
@@ -86,6 +128,11 @@ class Passcode {
         );
     }
 
+    /*
+     * Determine if the base and attempt match
+     * DEBUG: whether to show debug messages
+     * return: Boolean
+     */
     isMatch (DEBUG=false) {
 
         if (DEBUG) {
@@ -100,6 +147,8 @@ class Passcode {
 
         this.stats["lengths"]["base"] = this.baseIntervals.length;
         this.stats["lengths"]["attempt"] = this.attemptIntervals.length;
+        this.stats["rawIntervals"]["base"] = this.baseIntervals;
+        this.stats["rawIntervals"]["attempt"] = this.attemptIntervals;
 
         if (this.baseIntervals.length !== this.attemptIntervals.length) {
             console.log("Patterns are not of equal length");
@@ -139,10 +188,18 @@ class Passcode {
         return matches;
     }
 
+    /*
+     * Create structure for statistics storage
+     * return: nearly empty statistics storage
+     */
     createStatisticsStorage () {
         return {
             "matches" : null,
             "equalLength" : null,
+            "rawIntervals" : {
+                "base" : [],
+                "attempt" : []
+            },
             "lengths" : {
                 "base" : -1,
                 "attempt" : -1,
@@ -165,6 +222,10 @@ class Passcode {
         }
     }
 
+    /*
+     * Perform match check and calculate statistics
+     * return: partly/completely filled statistics storage
+     */
     calcResult () {
         this.finished = true;
         this.convertToIntervals();
