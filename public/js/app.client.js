@@ -28,7 +28,6 @@ class App {
             result = parseInt(prompt("Enter your user ID (provided by researcher)"));
         }
         this.userID = result;
-        $("#user-id").text(this.userID);
 
         // get session number
         result = null;
@@ -36,6 +35,14 @@ class App {
             result = parseInt(prompt("Enter session number (i.e., 1 or 2)"));
         }
         this.sessionNum = result;
+    }
+
+    /*
+     * Performs page setup such as adding items to the stage table
+     */
+    pageSetup () {
+        // set up top labels
+        $("#user-id").text(this.userID);
         $("#session-num").text(this.sessionNum);
 
         // set up session label and instructions
@@ -43,12 +50,7 @@ class App {
             document.getElementById("play-audio").toggleAttribute("disabled", true);
             $("#instruction-1").text("Recall the melody for the stage. Playback is disabled for this session.");
         }
-    }
 
-    /*
-     * Performs page setup such as adding items to the stage table
-     */
-    pageSetup () {
         // set up stages table
         let stageTable = document.getElementById("stage-table");
         for (let i = 0; i < this.audioData.length; ++i) {
@@ -195,8 +197,10 @@ class App {
 
     /*
      * Determine if the client can listen to the audio
+     * return: Boolean
      */
     canPlayAudio () {
+        console.log("canPlayAudio: " + this.sessionNum < 2);
         return this.sessionNum < 2;
     }
 
@@ -260,7 +264,9 @@ class App {
                     caller.completedStage = true;
                 }
                 if (caller.isPracticeStage()) {
-                    document.getElementById("play-audio").toggleAttribute("disabled", false);
+                    if (caller.canPlayAudio()) {
+                        document.getElementById("play-audio").toggleAttribute("disabled", false);
+                    }
                     clickElement.setAttribute("class", "unselected");
                 }
                 else {
@@ -307,8 +313,8 @@ class App {
             console.log("client received 'audioData' from server");
             caller.audioData = data["audio"];
             if (!caller.receivedData) {
-                caller.pageSetup();
                 caller.requestInformation();
+                caller.pageSetup();
             }
             caller.receivedData = true;
         });
