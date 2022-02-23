@@ -33,6 +33,9 @@ class AppServer {
         let result = {"audio" : []};
         let jsonFiles = fs.readdirSync("public/audio/json");
         for (let i = 0; i < jsonFiles.length; ++i) {
+            if (!jsonFiles[i].includes(".json")) {
+                continue;
+            }
             let parsedData = JSON.parse(fs.readFileSync("public/audio/json/" + jsonFiles[i]));
             result["audio"].push({
                 "filename" : parsedData["mp3"],

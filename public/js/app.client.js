@@ -72,6 +72,9 @@ class App {
             stageTable.appendChild(row);
         }
         this.highlightStage();
+
+        // set up next button
+        document.getElementById("next-audio").toggleAttribute("disabled", !this.isPracticeStage());
     }
 
     /*
@@ -203,6 +206,10 @@ class App {
         this.highlightStage(this.isFinishedAll());
         this.clearResults();
         this.stopAudio();
+
+        document.getElementById("next-audio").toggleAttribute("disabled", (!this.isPracticeStage()) || this.isFinishedAll());
+        document.getElementById("next-audio").classList.remove("highlighted-button");
+
         if (this.isFinishedAll()) {
             document.getElementById("play-audio").toggleAttribute("disabled", true);
             document.getElementById("recording-toggle").setAttribute("class", "unselectable");
@@ -283,8 +290,6 @@ class App {
         // "Next" button is clicked
         $("#next-audio").click(function () {
             caller.nextStage();
-            document.getElementById("next-audio").toggleAttribute("disabled", true);
-            document.getElementById("next-audio").classList.remove("highlighted-button");
         });
 
         // recording start/stop area is clicked
