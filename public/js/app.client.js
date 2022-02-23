@@ -346,6 +346,9 @@ class App {
             if (e.which === 32 && document.getElementById("recording-toggle").getAttribute("class") === "selected") {
                 console.log("space bar pressed");
                 caller.recording.addTime(Date.now());
+                if (e.target === document.body) {
+                    e.preventDefault();  // cancels the event (prevents scrolling)
+                }
             }
         });
     }
