@@ -5,6 +5,8 @@
  * Client JavaScript for the web application
  */
 
+import {Passcode} from "./passcode.js";
+
 class App {
 
     constructor () {

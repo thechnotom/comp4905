@@ -6,7 +6,7 @@
  * Based on a previous personal project
  */
 
-class Passcode {
+export class Passcode {
 
     /*
      * Sets up variables
@@ -29,6 +29,13 @@ class Passcode {
     }
 
     /*
+     * Getter for stats object
+     */
+    getStats () {
+        return this.stats;
+    }
+
+    /*
      * Adds a time to the rhythm
      * time: time (in milliseconds, normally time from the Unix epoch)
      */
@@ -48,6 +55,14 @@ class Passcode {
         for (let i = 1; i < this.attemptTimes.length; ++i) {
             this.attemptIntervals.push(this.attemptTimes[i] - this.attemptTimes[i - 1])
         }
+    }
+
+    /*
+     * Set attempt intervals directly
+     * intervals: list of attempt intervals
+     */
+    setAttemptIntervals (intervals) {
+        this.attemptIntervals = intervals;
     }
 
     /*
@@ -84,8 +99,8 @@ class Passcode {
      * DEBUG: whether to show debug messages
      * return: whether the ratio lists match
      */
-    singleIntervalMatch (baseRatios, attempRatios, DEBUG=false) {
-        if (baseRatios.length !== attempRatios.length) {
+    singleIntervalMatch (baseRatios, attemptRatios, DEBUG=false) {
+        if (baseRatios.length !== attemptRatios.length) {
             return false;
         }
 
@@ -98,7 +113,7 @@ class Passcode {
 
         let successes = 0;
         for (let i = 0; i < baseRatios.length; ++i) {
-            if (Passcode.withinTolerance(baseRatios[i], attempRatios[i], this.ratioEquivalenceTolerance)) {
+            if (Passcode.withinTolerance(baseRatios[i], attemptRatios[i], this.ratioEquivalenceTolerance)) {
                 ++successes;
             }
         }
@@ -220,6 +235,13 @@ class Passcode {
                 "received" : -1
             }
         }
+    }
+
+    /*
+     * Clear the stats object
+     */
+    clearStatistics () {
+        this.stats = this.createStatisticsStorage();
     }
 
     /*
