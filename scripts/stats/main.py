@@ -6,11 +6,17 @@ from Parser import Parser
 from Statistics import Statistics
 from Graph import Graph
 import json
+import sys
 
 # Driver code
 
+# Get data file from command line
+if (len(sys.argv) != 2):
+    print("Usage: main.py <filename>")
+    sys.exit(1)
+
 # Import data
-data = Parser.import_json("Study Data (Updated).json")
+data = Parser.import_json(sys.argv[1])
 
 # Print some statistics to the terminal
 print(f"Number of participants: {Statistics.user_count(data)}")
