@@ -1,14 +1,26 @@
+# Thomas Roller
+# Carleton University (Honours Project, COMP 4905)
+# Winter 2022
+
 import json
 import random
 import time
 import sys
 
+# Import a JSON file as a dictionary
+# filename: name of the file
+# return: dictionary
 def get_json_file (filename):
     result = None
     with open(filename, "r") as f:
         result = json.loads(f.read())
     return result
 
+# Update a set of attempts with a new user ID
+# base_path: name of the directory containing the study data
+# org_user_id: original ID of the user
+# new_user_id: new ID of the user
+# dictionary of attempts
 def get_updated_attempt_log (base_path, org_user_id, new_user_id):
     data = {"sessions" : {}}
     attempt_times = []
@@ -30,6 +42,9 @@ def get_updated_attempt_log (base_path, org_user_id, new_user_id):
 
     return data
 
+# Anonymize all data in a given directory
+# base_path: name of the directory containing the study data
+# return: dictionary containing the unified anonymized data
 def get_anonymized_data (base_path):
     # get a list of user IDs
     user_ids = [list(user_association.keys())[0] for user_association in get_json_file(base_path + "user_key.txt")["user_ids"]]
@@ -54,7 +69,10 @@ def get_anonymized_data (base_path):
 
     return data
 
-# while there is no explicit order, there is an implicit order to dictionaries
+# Shuffle the order of a dictionary
+# While there is no explicit order, there is an implicit order to dictionaries in newer Python standards
+# data: data to be shuffled
+# return: shuffled data
 def shuffle_order (data):
     result = {}
     keys = list(data.keys())
@@ -63,9 +81,15 @@ def shuffle_order (data):
         result[key] = data[key]
     return result
 
+# Export a string to a file
+# filename: name of the destination file
+# data: data to be exported
+# return: N/A
 def export_json (filename, data):
     with open(filename, "w") as f:
         f.write(data)
+
+# Driver code
 
 base_dir = None
 if (len(sys.argv) == 2):
