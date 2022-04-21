@@ -33,6 +33,7 @@ class Graph:
         ax = data_frame.plot.bar(stacked=False, title=f"Accuracy vs Musical Inclination (Session {session})")
         ax.set(xlabel="Rhythm", ylabel="Accuracy")
         ax.legend(title="Inclination", loc="upper right", bbox_to_anchor=(1.11, 1))
+        ax.grid(axis="y")
         Graph.__save_plot(f"accuracy_vs_musical_inclination_s{session}", 0.25)
 
     # Graph questionnaire responses (takes data from Statistics.questionnaire_count)
