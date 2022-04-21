@@ -9,3 +9,4 @@ class Utilities:
     class Data:
         rhythms = ["Practice 1", "Practice 2", "Carnival", "Pirates", "Chime"]
         sessions = ["0", "1"]
+        questionnaire_responses = [1, 2, 3, 4, 5]

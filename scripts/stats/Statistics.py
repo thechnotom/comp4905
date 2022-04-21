@@ -165,3 +165,16 @@ class Statistics:
                     continue
                 results[session][rhythm] = statistics.mean(accuracies)
         return results
+
+    # Get correnation information from the data
+    # x: x-axis data
+    # y: y-axis data
+    # return: dictionary of information
+    @staticmethod
+    def get_correlation (x, y):
+        line = list(statistics.linear_regression(x, y))
+        return {
+            "slope" : line[0],
+            "intercept" : line[1],
+            "correlation" : statistics.correlation(x, y)
+        }

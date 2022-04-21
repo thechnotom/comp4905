@@ -48,3 +48,6 @@ Graph.attempts_count(Statistics.attempts_count(data))
 
 # Graph the accuracy of each rhythm
 Graph.accuracy_by_rhythm(Statistics.accuracy_by_rhythm(data))
+
+# Graph musical inclination against ease of use
+Graph.inclination_vs_ease(data)

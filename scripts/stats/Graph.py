@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from Utilities import Utilities
 import os
+from Statistics import Statistics
+import numpy as np
 
 # Graph generation (and the necessary parsing)
 class Graph:
@@ -83,6 +85,31 @@ class Graph:
         ax.legend(title="Session")
         Graph.__save_plot("accuracy_by_rhythm.png", 0.25)
 
+    # Graph musical inclination against ease of use (takes data from Parser.import_json)
+    # data: a dictionary containing the data from the input file
+    # return: N/A
+    @staticmethod
+    def inclination_vs_ease (data):
+        x_data = []
+        y_data = []
+        for user in data:
+            q_data = Statistics.get_user_questionnaire(data, user)
+            x_data.append(q_data[0])  # inclination
+            y_data.append(q_data[1])  # inclination
+        x_data = np.array(x_data)
+        y_data = np.array(y_data)
+        plt.scatter(x_data, y_data)
+        correlation = Statistics.get_correlation(x_data, y_data)
+        plt.plot(x_data, correlation["slope"] * x_data + correlation["intercept"])
+        plt.legend([f"Correlation: {round(correlation['correlation'], 2)}"])
+        plt.title("Musical Inclination vs. Ease of Use")
+        plt.xlabel("Musical Inclination")
+        plt.ylabel("Ease of Use")
+        plt.grid(axis="both")
+        plt.xticks(Utilities.Data.questionnaire_responses)
+        plt.yticks(Utilities.Data.questionnaire_responses)
+        Graph.__save_plot("inclination_vs_ease.png", 0.15)
+
     # Save a graph
     # filename: name of the destination file
     # bottomExpansion: the amount of space to add to the bottom of the graph
@@ -95,3 +122,4 @@ class Graph:
             plt.subplots_adjust(bottom=bottomExpansion)
         plt.savefig("graphs/" + filename)
         plt.subplots_adjust(bottom=0)
+        plt.clf()
