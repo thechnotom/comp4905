@@ -20,7 +20,7 @@ class Graph:
     # return: N/A
     @staticmethod
     def accuracy_by_inclination (data, session):
-        rhythms = ["Carnival", "Pirates", "Chime"]
+        rhythms = Utilities.Data.rhythms[2:]
         all_averages = []
         for rhythm in rhythms:
             averages = [rhythm]
