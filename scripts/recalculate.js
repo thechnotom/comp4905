@@ -3,7 +3,7 @@
  * COMP 4905 (Winter 2022)
  */
 
-import {Passcode} from "../../public/js/passcode.js";
+import {Passcode} from "../public/js/passcode.js";
 import fs from "fs";
 
 /*
